@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatbot-rag-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatbot-rag-app
+  template:
+    metadata:
+      labels:
+        app: chatbot-rag-app
+    spec:
+      {{- if and (eq .Values.env.LLM_TYPE "vertex") (hasKey .Values.env "GOOGLE_APPLICATION_CREDENTIALS") }}
+      volumes:
+        - name: gcloud-credentials
+          secret:
+            secretName: {{ .Values.env.GOOGLE_CLOUD_PROJECT }}
+            optional: true
+      {{- end }}
+      initContainers:
+        - name: create-index
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "opentelemetry-instrument" ]
+          args: [ "flask", "create-index" ]
+          envFrom:
+            - configMapRef:
+                name: chatbot-rag-app-env
+      containers:
+        - name: api-frontend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "opentelemetry-instrument" ]
+          args: [ "python", "api/app.py" ]
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - configMapRef:
+                name: chatbot-rag-app-env
+          {{- if and (eq .Values.env.LLM_TYPE "vertex") (hasKey .Values.env "GOOGLE_APPLICATION_CREDENTIALS") }}
+          volumeMounts:
+            - name: gcloud-credentials
+              mountPath: {{ .Values.env.GOOGLE_APPLICATION_CREDENTIALS }}
+              subPath: {{ base .Values.env.GOOGLE_APPLICATION_CREDENTIALS }}
+              readOnly: true
+          {{- end }}
