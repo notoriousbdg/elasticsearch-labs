@@ -11,10 +11,12 @@ service:
   port: 4000
 
 # To have Helm create a Secret from a local credentials file, configure this section:
-# credentials:
-#   enabled: true
-#   localFilePath: files/credentials.json   # Path to your credentials file, relative to the chart directory
-#   containerFileName: credentials.json     # Filename to use inside the container (should match the filename part of GOOGLE_APPLICATION_CREDENTIALS)
+credentials:
+  enabled: true
+#   # Path to your credentials file, relative to the chart directory
+  localFilePath: files/google_creds.json
+#   # Filename to use inside the container (should match the filename part of GOOGLE_APPLICATION_CREDENTIALS)
+  containerFileName: credentials.json
 
 env:
   # Copy these from your .env file or set here.
@@ -66,13 +68,13 @@ env:
   # CHAT_MODEL: amazon.titan-text-lite-v1
 
   # Uncomment and complete if you want to use Vertex AI
-  # LLM_TYPE: vertex
+  LLM_TYPE: vertex
   ## Project that has the service "aiplatform.googleapis.com" enabled
-  # GOOGLE_CLOUD_PROJECT:
-  # GOOGLE_CLOUD_REGION:
-  # CHAT_MODEL: gemini-1.5-flash-002
+  GOOGLE_CLOUD_PROJECT: my-project
+  GOOGLE_CLOUD_REGION: us-west-1
+  CHAT_MODEL: gemini-1.5-flash-002
   ## Needed if you haven't run `gcloud auth application-default login`
-  # GOOGLE_APPLICATION_CREDENTIALS:
+  GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
 
   # Uncomment and complete if you want to use Mistral AI
   # LLM_TYPE: mistral

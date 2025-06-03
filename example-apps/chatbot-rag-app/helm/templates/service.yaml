@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    app: chatbot-rag-app
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: chatbot-rag-app
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: 4000

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatbot-rag-app-env
+  labels:
+    app: chatbot-rag-app
+data:
+  {{- range $key, $value := .Values.env }}
+  {{ $key }}: "{{ $value }}"
+  {{- end }}

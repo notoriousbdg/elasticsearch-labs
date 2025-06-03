@@ -16,7 +16,7 @@ spec:
       volumes:
         - name: gcloud-credentials
           secret:
-            secretName: {{ .Values.env.GOOGLE_CLOUD_PROJECT }}
+            secretName: chatbot-rag-app-credentials
             optional: true
       {{- end }}
       initContainers:
@@ -42,7 +42,7 @@ spec:
           {{- if and (eq .Values.env.LLM_TYPE "vertex") (hasKey .Values.env "GOOGLE_APPLICATION_CREDENTIALS") }}
           volumeMounts:
             - name: gcloud-credentials
-              mountPath: {{ .Values.env.GOOGLE_APPLICATION_CREDENTIALS }}
-              subPath: {{ base .Values.env.GOOGLE_APPLICATION_CREDENTIALS }}
+              mountPath: /app/{{ .Values.credentials.containerFileName }}
+              subPath: {{ base .Values.credentials.containerFileName }}
               readOnly: true
           {{- end }}
